@@ -17,6 +17,9 @@ ENV DATA_VERSION=1.6.0 \
     HOME=/opt/app-root/src \
     PATH=/opt/app-root/src/bin:/opt/app-root/bin:/usr/libexec/fluentd/bin:$PATH \
     RUBY_VERSION=2.0 \
+    LOGGING_FILE_PATH=/var/log/fluentd/fluentd.log \
+    LOGGING_FILE_AGE=10 \
+    LOGGING_FILE_SIZE=1024000 \
     container=oci
 
 ARG TEST_REPO
@@ -54,7 +57,7 @@ ADD lib/generate_throttle_configs/lib/*.rb ${HOME}/
 ADD lib/filter_parse_json_field/lib/*.rb /etc/fluent/plugin/
 ADD patch/in_prometheus.rb ${GEM_HOME}/gems/fluent-plugin-prometheus-0.4.0/lib/fluent/plugin/
 
-RUN mkdir -p /etc/fluent/configs.d/{dynamic,user} && \
+RUN mkdir -p /etc/fluent/configs.d/{dynamic,user} && mkdir -p /var/log/fluentd/ && \
     chmod 777 /etc/fluent/configs.d/dynamic && \
     ln -s /etc/fluent/configs.d/user/fluent.conf /etc/fluent/fluent.conf
 
@@ -69,7 +72,9 @@ RUN if [ ! -d /etc/fluent/plugin ] ; then \
         cp $sniffer /etc/fluent/plugin/ ; \
     fi
 
-COPY utils/** ${HOME}/utils
+COPY patch/logger/log.rb ${GEM_HOME}/gems/fluentd-0.12.43/lib/fluent
+COPY patch/logger/supervisor.rb ${GEM_HOME}/gems/fluentd-0.12.43/lib/fluent
+COPY utils/** ${HOME}/utils/
 
 WORKDIR ${HOME}
 
