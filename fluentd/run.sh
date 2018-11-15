@@ -19,7 +19,7 @@ done
 echo "============================="
 echo "Fluentd logs have been redirected to: $LOGGING_FILE_PATH"
 echo "If you want to print out the logs, use command:"
-echo "oc exec <pod_name> $HOME/utils/logs"
+echo "oc exec <pod_name> /usr/local/logs"
 echo "============================="
 
 dirname=$( dirname $LOGGING_FILE_PATH )
